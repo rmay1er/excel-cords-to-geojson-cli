@@ -6,8 +6,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/app"
 	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/config"
-	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/domain/app"
 	"github.com/spf13/cobra"
 )
 
@@ -67,6 +67,7 @@ var convertCmd = &cobra.Command{
 			cfg.Excel.Columns.Name, cfg.Excel.Columns.Description, cfg.Excel.Columns.Coordinates)
 		fmt.Printf("  🗺️  GeoJSON: %s → %s\n", cfg.Geojson.Input, cfg.Geojson.Output)
 
+		// Создаем приложение с конфигом
 		// Создаем приложение с конфигом
 		fmt.Println("\n🔧 Инициализирую приложение...")
 		application, err := app.NewAppWithConfig(cfg)

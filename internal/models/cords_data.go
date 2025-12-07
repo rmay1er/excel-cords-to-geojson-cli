@@ -1,4 +1,4 @@
-package cords
+package models
 
 import (
 	"strconv"

@@ -1,0 +1,63 @@
+package processors
+
+import (
+	"fmt"
+
+	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/readers"
+	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/writers"
+)
+
+// CoordinatesProcessor обрабатывает координаты: читает из Reader, пишет в Writer
+type CoordinatesProcessor struct {
+	reader readers.Reader
+	writer writers.Writer
+}
+
+// NewCoordinatesProcessor создает новый процессор координат
+func NewCoordinatesProcessor(reader readers.Reader, writer writers.Writer) *CoordinatesProcessor {
+	return &CoordinatesProcessor{
+		reader: reader,
+		writer: writer,
+	}
+}
+
+// Process выполняет основной процесс: читает данные из Reader, пишет в Writer
+func (p *CoordinatesProcessor) Process(color string) error {
+	// 1. Читаем данные из Reader
+	fmt.Println("📖 Читаю данные из источника...")
+	data, err := p.reader.Read()
+	if err != nil {
+		return fmt.Errorf("ошибка при чтении данных: %w", err)
+	}
+	fmt.Printf("✅ Прочитано %d координат\n", len(*data))
+
+	// 2. Пишем данные через Writer
+	fmt.Println("✍️  Записываю данные в целевой формат...")
+	if err := p.writer.Write(data, color); err != nil {
+		return fmt.Errorf("ошибка при записи данных: %w", err)
+	}
+	fmt.Println("✅ Данные записаны успешно")
+
+	return nil
+}
+
+// Close закрывает Reader и Writer
+func (p *CoordinatesProcessor) Close() error {
+	var firstErr error
+
+	if p.reader != nil {
+		if err := p.reader.Close(); err != nil {
+			firstErr = err
+		}
+	}
+
+	if p.writer != nil {
+		if err := p.writer.Close(); err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+		}
+	}
+
+	return firstErr
+}

@@ -1,12 +1,12 @@
 /*
-Copyright © 2025 ИМЯ <EMAIL ADDRESS>
+Copyright © 2025 Ruslan Mayer
 */
 package cmd
 
 import (
 	"fmt"
 
-	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/domain/wokergeo"
+	"github.com/rmay1er/excel-cords-to-geojson-cli/internal/writers"
 	"github.com/spf13/cobra"
 )
 
@@ -17,31 +17,34 @@ var removepointsCmd = &cobra.Command{
 	Long: `Удалить все точки (объекты) из GeoJSON файла, оставив пустую коллекцию объектов.
 
 Пример:
-		excel-cords-to-geojson removepoints --file путь/к/файлу.geojson`,
-	Run: func(cmd *cobra.Command, args []string) {
+	excel-cords-to-geojson removepoints --file путь/к/файлу.geojson`,
+	RunE: func(cmd *cobra.Command, args []string) error {
 		filePath, _ := cmd.Flags().GetString("file")
 		if filePath == "" {
-			fmt.Println("Ошибка: требуется флаг --file")
-			return
+			return fmt.Errorf("ошибка: требуется флаг --file")
 		}
 
-		// Создать нового обработчика GeoJSON
-		worker, err := wokergeo.NewGeojsonWoker(filePath)
+		fmt.Printf("🗑️  Удаляю все точки из: %s\n", filePath)
+
+		// Создаем GeoJSON writer
+		writer, err := writers.NewGeojsonWriter(filePath)
 		if err != nil {
-			fmt.Printf("Ошибка загрузки GeoJSON файла: %v\n", err)
-			return
+			return fmt.Errorf("❌ ошибка загрузки GeoJSON файла: %w", err)
+		}
+		defer writer.Close()
+
+		// Очищаем все точки из файла
+		if err := writer.RemoveAllPoints(); err != nil {
+			return fmt.Errorf("❌ ошибка при удалении точек: %w", err)
 		}
 
-		// Очистить все объекты из файла
-		worker.RemoveAllPoints()
-
-		// Сохранить пустой GeoJSON файл
-		if err := worker.SaveToGeojson(filePath); err != nil {
-			fmt.Printf("Ошибка сохранения GeoJSON файла: %v\n", err)
-			return
+		// Сохраняем пустой GeoJSON файл
+		if err := writer.Save(filePath); err != nil {
+			return fmt.Errorf("❌ ошибка сохранения GeoJSON файла: %w", err)
 		}
 
-		fmt.Printf("Все точки удалены из %s\n", filePath)
+		fmt.Printf("✅ Все точки удалены из %s\n", filePath)
+		return nil
 	},
 }
 
@@ -50,6 +53,7 @@ func init() {
 
 	// Здесь вы определите флаги и настройки конфигурации.
 	removepointsCmd.Flags().StringP("file", "f", "", "Путь к GeoJSON файлу")
+	removepointsCmd.MarkFlagRequired("file")
 
 	// Cobra поддерживает Persistent Flags, которые будут работать для этой команды
 	// и всех подкоманд, например:
