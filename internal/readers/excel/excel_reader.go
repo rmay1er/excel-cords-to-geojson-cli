@@ -119,7 +119,7 @@ func (r *ExcelReader) Read() (*[]models.CordsData, error) {
 
 			// Берем описание из соответствующей колонки
 			if len(row) >= descColIdx && row[descColIdx-1] != "" {
-				cordsData.PointDesc = row[descColIdx-1]
+				cordsData.Description = row[descColIdx-1]
 			}
 
 			// Добавляем объект в результат

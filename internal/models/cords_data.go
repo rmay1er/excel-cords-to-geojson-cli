@@ -14,9 +14,9 @@ const (
 )
 
 type CordsData struct {
-	Type        CordsDataType
+	Type        string
 	IconCaption string
-	PointDesc   string
+	Description string
 	Cords       any
 	Color       string
 }

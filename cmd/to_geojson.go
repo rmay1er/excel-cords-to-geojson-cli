@@ -70,7 +70,7 @@ var toGeoJsonCmd = &cobra.Command{
 		// Создаем приложение с конфигом
 		// Создаем приложение с конфигом
 		fmt.Println("\n🔧 Инициализирую приложение...")
-		application, err := app.NewAppWithConfig(cfg)
+		application, err := app.NewGeoAppWithConfig(cfg)
 		if err != nil {
 			return fmt.Errorf("❌ ошибка при инициализации приложения: %w", err)
 		}

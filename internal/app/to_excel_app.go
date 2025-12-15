@@ -12,22 +12,22 @@ import (
 )
 
 // App основное приложение - фасад для работы с процессором
-type GeoJsonApp struct {
+type ExcelApp struct {
 	processor *processors.MarkCoordinatesProcessor
 	writer    writers.Writer
 	config    *config.Config
 }
 
 // NewApp создает новое приложение с процессором
-func NewAppGeoJson(processor *processors.MarkCoordinatesProcessor, writer writers.Writer) *GeoJsonApp {
-	return &GeoJsonApp{
+func NewAppExcel(processor *processors.MarkCoordinatesProcessor, writer writers.Writer) *ExcelApp {
+	return &ExcelApp{
 		processor: processor,
 		writer:    writer,
 	}
 }
 
 // NewAppWithConfig создает новое приложение с конфигурацией
-func NewGeoAppWithConfig(cfg *config.Config) (*GeoJsonApp, error) {
+func NewExcelAppWithConfig(cfg *config.Config) (*ExcelApp, error) {
 	// Создаем Reader для Excel
 	excelReader, err := xlsx.NewExcelReader(
 		cfg.Excel.File,
@@ -51,7 +51,7 @@ func NewGeoAppWithConfig(cfg *config.Config) (*GeoJsonApp, error) {
 	// Создаем процессор
 	processor := processors.NewMarkCoordinatesProcessor(excelReader, geojsonWriter)
 
-	return &GeoJsonApp{
+	return &ExcelApp{
 		processor: processor,
 		writer:    geojsonWriter,
 		config:    cfg,
@@ -59,7 +59,7 @@ func NewGeoAppWithConfig(cfg *config.Config) (*GeoJsonApp, error) {
 }
 
 // Process выполняет основной процесс обработки координат
-func (a *GeoJsonApp) Process() error {
+func (a *ExcelApp) Process() error {
 	if a.config == nil {
 		return fmt.Errorf("конфигурация не установлена")
 	}
@@ -79,7 +79,7 @@ func (a *GeoJsonApp) Process() error {
 }
 
 // Close закрывает процессор и writer
-func (a *GeoJsonApp) Close() error {
+func (a *ExcelApp) Close() error {
 	if a.processor != nil {
 		if err := a.processor.Close(); err != nil {
 			return err

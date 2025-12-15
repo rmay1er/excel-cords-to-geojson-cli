@@ -29,7 +29,7 @@ func NewGeojsonWriter(path string) (*GeojsonWriter, error) {
 }
 
 // Write добавляет координаты в GeoJSON коллекцию
-func (w *GeojsonWriter) Write(data *[]models.CordsData, color string) error {
+func (w *GeojsonWriter) Write(data *[]models.CordsData, color ...string) error {
 	if data == nil || len(*data) == 0 {
 		return fmt.Errorf("нет данных для записи")
 	}
@@ -51,10 +51,10 @@ func (w *GeojsonWriter) Write(data *[]models.CordsData, color string) error {
 		if cord.IconCaption != "" {
 			newPoint.SetProperty("iconCaption", cord.IconCaption)
 		}
-		if cord.PointDesc != "" {
-			newPoint.SetProperty("description", cord.PointDesc)
+		if cord.Description != "" {
+			newPoint.SetProperty("description", cord.Description)
 		}
-		if color != "" {
+		if color != nil && color[0] != "" {
 			newPoint.SetProperty("marker-color", color)
 		}
 
