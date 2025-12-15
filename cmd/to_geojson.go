@@ -70,7 +70,7 @@ var toGeoJsonCmd = &cobra.Command{
 		// Создаем приложение с конфигом
 		// Создаем приложение с конфигом
 		fmt.Println("\n🔧 Инициализирую приложение...")
-		application, err := app.NewGeoAppWithConfig(cfg)
+		application, err := app.NewJGeoAppWithConfig(cfg)
 		if err != nil {
 			return fmt.Errorf("❌ ошибка при инициализации приложения: %w", err)
 		}
@@ -78,7 +78,7 @@ var toGeoJsonCmd = &cobra.Command{
 
 		// Обрабатываем данные
 		fmt.Println("\n🔄 Начинаю преобразование координат...")
-		if err := application.Process(); err != nil {
+		if err := application.ProcessToGeojson(); err != nil {
 			return fmt.Errorf("❌ ошибка при обработке: %w", err)
 		}
 

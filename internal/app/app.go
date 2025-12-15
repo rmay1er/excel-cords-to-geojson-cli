@@ -12,22 +12,22 @@ import (
 )
 
 // App основное приложение - фасад для работы с процессором
-type ExcelApp struct {
-	processor *processors.MarkCoordinatesProcessor
+type JGeoApp struct {
+	processor *processors.MarksProcessor
 	writer    writers.Writer
 	config    *config.Config
 }
 
 // NewApp создает новое приложение с процессором
-func NewAppExcel(processor *processors.MarkCoordinatesProcessor, writer writers.Writer) *ExcelApp {
-	return &ExcelApp{
+func NewJGeoApp(processor *processors.MarksProcessor, writer writers.Writer) *JGeoApp {
+	return &JGeoApp{
 		processor: processor,
 		writer:    writer,
 	}
 }
 
 // NewAppWithConfig создает новое приложение с конфигурацией
-func NewExcelAppWithConfig(cfg *config.Config) (*ExcelApp, error) {
+func NewJGeoAppWithConfig(cfg *config.Config) (*JGeoApp, error) {
 	// Создаем Reader для Excel
 	excelReader, err := xlsx.NewExcelReader(
 		cfg.Excel.File,
@@ -49,9 +49,9 @@ func NewExcelAppWithConfig(cfg *config.Config) (*ExcelApp, error) {
 	}
 
 	// Создаем процессор
-	processor := processors.NewMarkCoordinatesProcessor(excelReader, geojsonWriter)
+	processor := processors.NewMarksProcessor(excelReader, geojsonWriter)
 
-	return &ExcelApp{
+	return &JGeoApp{
 		processor: processor,
 		writer:    geojsonWriter,
 		config:    cfg,
@@ -59,7 +59,7 @@ func NewExcelAppWithConfig(cfg *config.Config) (*ExcelApp, error) {
 }
 
 // Process выполняет основной процесс обработки координат
-func (a *ExcelApp) Process() error {
+func (a *JGeoApp) ProcessToGeojson() error {
 	if a.config == nil {
 		return fmt.Errorf("конфигурация не установлена")
 	}
@@ -78,8 +78,24 @@ func (a *ExcelApp) Process() error {
 	return nil
 }
 
+func (a *JGeoApp) ProcessToExcel(path string) error {
+
+	// Выполняем процесс обработки через процессор
+	if err := a.processor.Process(""); err != nil {
+		return err
+	}
+
+	// Сохраняем результат
+	fmt.Printf("💾 Сохраняю результат в: %s\n", path)
+	if err := a.writer.Save(path); err != nil {
+		return fmt.Errorf("ошибка при сохранении файла: %w", err)
+	}
+
+	return nil
+}
+
 // Close закрывает процессор и writer
-func (a *ExcelApp) Close() error {
+func (a *JGeoApp) Close() error {
 	if a.processor != nil {
 		if err := a.processor.Close(); err != nil {
 			return err

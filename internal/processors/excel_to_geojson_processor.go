@@ -8,21 +8,21 @@ import (
 )
 
 // MarkCoordinatesProcessor обрабатывает координаты: читает из Reader, пишет в Writer
-type MarkCoordinatesProcessor struct {
+type MarksProcessor struct {
 	reader readers.Reader
 	writer writers.Writer
 }
 
 // NewMarkCoordinatesProcessor создает новый процессор координат
-func NewMarkCoordinatesProcessor(reader readers.Reader, writer writers.Writer) *MarkCoordinatesProcessor {
-	return &MarkCoordinatesProcessor{
+func NewMarksProcessor(reader readers.Reader, writer writers.Writer) *MarksProcessor {
+	return &MarksProcessor{
 		reader: reader,
 		writer: writer,
 	}
 }
 
 // Process выполняет основной процесс: читает данные из Reader, пишет в Writer
-func (p *MarkCoordinatesProcessor) Process(color string) error {
+func (p *MarksProcessor) Process(color string) error {
 	// 1. Читаем данные из Reader
 	fmt.Println("📖 Читаю данные из источника...")
 	data, err := p.reader.Read()
@@ -42,7 +42,7 @@ func (p *MarkCoordinatesProcessor) Process(color string) error {
 }
 
 // Close закрывает Reader и Writer
-func (p *MarkCoordinatesProcessor) Close() error {
+func (p *MarksProcessor) Close() error {
 	var firstErr error
 
 	if p.reader != nil {

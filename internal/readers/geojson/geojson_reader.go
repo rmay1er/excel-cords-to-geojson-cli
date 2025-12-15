@@ -63,3 +63,7 @@ func (r *GeoJSONReader) Read() (*[]models.CordsData, error) {
 
 	return &parsed, nil
 }
+
+func (r *GeoJSONReader) Close() error {
+	return nil
+}
